@@ -26,7 +26,7 @@ draw view drawables =
         (List.map drawShape drawables)
 
 
-drawShape : Drawable -> Svg a
+drawShape : Drawable -> Svg msg
 drawShape drawable =
     let
         data =
@@ -37,39 +37,51 @@ drawShape drawable =
         }
 
 
-circle : DrawingData -> Float -> Svg a
+circle : DrawingData -> Float -> Svg msg
 circle data radius =
     Svg.circle
         (r radius
-            :: cx (Tuple.first data.position)
-            :: cy (Tuple.second data.position)
             :: fill data.fill
-            :: []
+            ++ position data.position
+            ++ outline data.outline
         )
         []
 
 
-maybeAttr : (a -> Svg.Attribute msg) -> Maybe a -> List (Svg.Attribute msg)
-maybeAttr mapper mv =
-    Maybe.map mapper mv
-        |> Maybe.map List.singleton
-        |> Maybe.withDefault []
-
-
-fill : Maybe Color -> Svg.Attribute msg
+fill : Maybe Color -> List (Svg.Attribute msg)
 fill maybeColor =
-    Svg.Attributes.fill (renderColor maybeColor)
+    case maybeColor of
+        Just color ->
+            [ Svg.Attributes.fill (renderColor color)
+            , Svg.Attributes.fillOpacity <| String.fromFloat (Color.toRgba color).alpha
+            ]
+
+        Nothing ->
+            [ Svg.Attributes.fillOpacity "0" ]
 
 
-renderColor : Maybe Color -> String
-renderColor maybeColor =
+outline : Maybe ( Color, Float ) -> List (Svg.Attribute msg)
+outline maybeOutline =
+    case maybeOutline of
+        Just ( color, strokeWidth ) ->
+            [ Svg.Attributes.stroke (renderColor color)
+            , Svg.Attributes.strokeWidth (String.fromFloat strokeWidth)
+            , Svg.Attributes.strokeOpacity <| String.fromFloat (Color.toRgba color).alpha
+            ]
+
+        Nothing ->
+            [ Svg.Attributes.strokeOpacity "0" ]
+
+
+renderColor : Color -> String
+renderColor color =
     let
         { red, green, blue, alpha } =
-            toRgba255 (Maybe.withDefault noColor maybeColor)
+            toRgba255 color
     in
-    List.map String.fromInt [ red, green, blue, alpha ]
+    List.map String.fromInt [ red, green, blue ]
         |> String.join ","
-        |> (\s -> "rgba(" ++ s ++ ")")
+        |> (\s -> "rgb(" ++ s ++ ")")
 
 
 noColor : Color
@@ -92,7 +104,7 @@ toRgba255 color =
 
 to255 : Float -> Int
 to255 value =
-    clamp 0 255 <| truncate <| value * 255
+    round <| clamp 0 255 <| (value * 255)
 
 
 viewBox : Float -> Float -> Float -> Float -> Svg.Attribute msg
@@ -116,6 +128,11 @@ height =
 r : Float -> Svg.Attribute msg
 r =
     Svg.Attributes.r << String.fromFloat
+
+
+position : ( Float, Float ) -> List (Svg.Attribute msg)
+position ( x, y ) =
+    [ cx x, cy y ]
 
 
 cx : Float -> Svg.Attribute msg
