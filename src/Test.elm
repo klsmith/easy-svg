@@ -2,14 +2,14 @@ module Test exposing (..)
 
 import Color exposing (blue, green)
 import Drawable exposing (..)
-import EasySvg
+import EasySvg exposing (View)
 import Html exposing (Html, pre, text)
 import Shape exposing (circle)
 
 
 main : Html msg
 main =
-    EasySvg.draw viewConfig [ test ]
+    EasySvg.draw viewConfig [ testCircle ]
 
 
 viewConfig : View

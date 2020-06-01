@@ -43,7 +43,8 @@ circle data radius =
         (r radius
             :: cx (Tuple.first data.position)
             :: cy (Tuple.second data.position)
-            :: maybeAttr fill data.fill
+            :: fill data.fill
+            :: []
         )
         []
 
@@ -55,20 +56,25 @@ maybeAttr mapper mv =
         |> Maybe.withDefault []
 
 
-fill : Color -> Svg.Attribute msg
-fill color =
-    Svg.Attributes.fill (renderColor color)
+fill : Maybe Color -> Svg.Attribute msg
+fill maybeColor =
+    Svg.Attributes.fill (renderColor maybeColor)
 
 
-renderColor : Color -> String
-renderColor color =
+renderColor : Maybe Color -> String
+renderColor maybeColor =
     let
         { red, green, blue, alpha } =
-            toRgba255 color
+            toRgba255 (Maybe.withDefault noColor maybeColor)
     in
     List.map String.fromInt [ red, green, blue, alpha ]
         |> String.join ","
         |> (\s -> "rgba(" ++ s ++ ")")
+
+
+noColor : Color
+noColor =
+    Color.rgba 0 0 0 0
 
 
 toRgba255 : Color -> { red : Int, green : Int, blue : Int, alpha : Int }
