@@ -1,7 +1,8 @@
 module Drawable exposing
     ( Drawable
     , DrawingData
-    , drawable
+    , Shape(..)
+    , circle
     , fill
     , getDrawingData
     , outline
@@ -9,7 +10,6 @@ module Drawable exposing
     )
 
 import Color exposing (Color)
-import Shape exposing (Shape)
 
 
 type Drawable
@@ -28,10 +28,16 @@ type alias DrawingData =
     }
 
 
+type Shape
+    = Circle Float
+
+
 
 -- CONSTRUCTORS
 
 
+{-| Not public, this is used to hold the default data for everything except shape.
+-}
 drawable : Shape -> Drawable
 drawable shape =
     Drawable
@@ -46,12 +52,22 @@ drawable shape =
         }
 
 
+circle : Float -> Drawable
+circle radius =
+    drawable (Circle radius)
+
+
 
 -- GENERIC PIPELINE
 
 
-{-| Doesn't Render
+{-| Exposed to allow for custom rendering modules.
 -}
+getDrawingData : Drawable -> DrawingData
+getDrawingData (Drawable data) =
+    data
+
+
 outline : Color -> Float -> Drawable -> Drawable
 outline color width (Drawable data) =
     Drawable { data | outline = Just ( color, width ) }
@@ -108,6 +124,21 @@ scaleY y d =
     d |> scaleXY (getScaleX d) y
 
 
+getScaleXY : Drawable -> ( Float, Float )
+getScaleXY (Drawable data) =
+    data.scale
+
+
+getScaleX : Drawable -> Float
+getScaleX d =
+    Tuple.first (getScaleXY d)
+
+
+getScaleY : Drawable -> Float
+getScaleY d =
+    Tuple.second (getScaleXY d)
+
+
 
 -- SKEW PIPELINE
 
@@ -140,6 +171,21 @@ skewY y d =
     d |> skewXY (getSkewX d) y
 
 
+getSkewXY : Drawable -> ( Float, Float )
+getSkewXY (Drawable data) =
+    data.skew
+
+
+getSkewX : Drawable -> Float
+getSkewX d =
+    Tuple.first (getSkewXY d)
+
+
+getSkewY : Drawable -> Float
+getSkewY d =
+    Tuple.second (getSkewXY d)
+
+
 
 -- POSITION PIPELINE
 
@@ -157,82 +203,6 @@ positionX x d =
 positionY : Float -> Drawable -> Drawable
 positionY y d =
     d |> position (getPositionX d) y
-
-
-
--- GENERIC GETTERS
-
-
-getDrawingData : Drawable -> DrawingData
-getDrawingData (Drawable data) =
-    data
-
-
-getShape : Drawable -> Shape
-getShape (Drawable data) =
-    data.shape
-
-
-getOutline : Drawable -> Maybe ( Color, Float )
-getOutline (Drawable data) =
-    data.outline
-
-
-getFill : Drawable -> Maybe Color
-getFill (Drawable data) =
-    data.fill
-
-
-getImageSrc : Drawable -> Maybe String
-getImageSrc (Drawable data) =
-    data.image
-
-
-getRotation : Drawable -> Float
-getRotation (Drawable data) =
-    data.rotate
-
-
-
--- SCALE GETTERS
-
-
-getScaleXY : Drawable -> ( Float, Float )
-getScaleXY (Drawable data) =
-    data.scale
-
-
-getScaleX : Drawable -> Float
-getScaleX d =
-    Tuple.first (getScaleXY d)
-
-
-getScaleY : Drawable -> Float
-getScaleY d =
-    Tuple.second (getScaleXY d)
-
-
-
--- SKEW GETTERS
-
-
-getSkewXY : Drawable -> ( Float, Float )
-getSkewXY (Drawable data) =
-    data.skew
-
-
-getSkewX : Drawable -> Float
-getSkewX d =
-    Tuple.first (getSkewXY d)
-
-
-getSkewY : Drawable -> Float
-getSkewY d =
-    Tuple.second (getSkewXY d)
-
-
-
--- POSITION GETTERS
 
 
 getPosition : Drawable -> ( Float, Float )
