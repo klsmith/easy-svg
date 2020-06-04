@@ -43,10 +43,10 @@ drawShape drawable =
         Circle radius ->
             TS.circle
                 [ TSA.r (TST.num radius)
-                , TSA.cx (TST.num <| Tuple.first data.position)
-                , TSA.cy (TST.num <| Tuple.second data.position)
+                , TSA.cx (TST.num data.x)
+                , TSA.cy (TST.num data.y)
+                , TSA.strokeWidth (TST.num <| getStrokeWidth data)
                 , TSA.stroke (getStrokePaint data)
-                , TSA.strokeWidth (getStrokeWidth data)
                 , TSA.fill (getFillPaint data)
                 ]
                 []
@@ -55,35 +55,42 @@ drawShape drawable =
             TS.rect
                 [ TSA.width (TST.num width)
                 , TSA.height (TST.num height)
-                , TSA.x (getTopLeftX data width)
-                , TSA.y (getTopLeftY data height)
+                , TSA.x (TST.num <| getTopLeftX data width)
+                , TSA.y (TST.num <| getTopLeftY data height)
+                , TSA.strokeWidth (TST.num <| getStrokeWidth data)
                 , TSA.stroke (getStrokePaint data)
-                , TSA.strokeWidth (getStrokeWidth data)
                 , TSA.fill (getFillPaint data)
                 ]
                 []
 
 
-getTopLeftX : DrawingData -> Float -> TST.Length
+getTopLeftX : DrawingData -> Float -> Float
 getTopLeftX data width =
-    TST.num <| (\x -> x - width / 2) <| Tuple.first data.position
+    data.x - width / 2
 
 
-getTopLeftY : DrawingData -> Float -> TST.Length
+getTopLeftY : DrawingData -> Float -> Float
 getTopLeftY data height =
-    TST.num <| (\y -> y - height / 2) <| Tuple.second data.position
+    data.y - height / 2
+
+
+getStrokeWidth : DrawingData -> Float
+getStrokeWidth data =
+    data.outline
+        |> Maybe.map Tuple.second
+        |> Maybe.withDefault 0
 
 
 getStrokePaint : DrawingData -> TST.Paint
 getStrokePaint data =
-    Maybe.withDefault TST.PaintNone <| Maybe.map TST.Paint <| Maybe.map Tuple.first <| data.outline
-
-
-getStrokeWidth : DrawingData -> TST.Length
-getStrokeWidth data =
-    TST.num <| Maybe.withDefault 0 <| Maybe.map Tuple.second <| data.outline
+    data.outline
+        |> Maybe.map Tuple.first
+        |> Maybe.map TST.Paint
+        |> Maybe.withDefault TST.PaintNone
 
 
 getFillPaint : DrawingData -> TST.Paint
 getFillPaint data =
-    Maybe.withDefault TST.PaintNone <| Maybe.map TST.Paint <| data.fill
+    data.fill
+        |> Maybe.map TST.Paint
+        |> Maybe.withDefault TST.PaintNone

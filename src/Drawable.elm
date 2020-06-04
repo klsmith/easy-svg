@@ -23,8 +23,9 @@ type alias DrawingData =
     , fill : Maybe Color
     , scale : ( Float, Float )
     , skew : ( Float, Float )
-    , position : ( Float, Float )
     , rotate : Float
+    , x : Float
+    , y : Float
     }
 
 
@@ -47,8 +48,9 @@ drawable shape =
         , fill = Nothing
         , scale = ( 1, 1 )
         , skew = ( 0, 0 )
-        , position = ( 0, 0 )
         , rotate = 0
+        , x = 0
+        , y = 0
         }
 
 
@@ -189,30 +191,15 @@ getSkewY =
 
 
 position : Float -> Float -> Drawable -> Drawable
-position x y (Drawable data) =
-    Drawable { data | position = ( x, y ) }
+position x y d =
+    d |> positionX x |> positionY y
 
 
 positionX : Float -> Drawable -> Drawable
-positionX x d =
-    d |> position x (getPositionY d)
+positionX x (Drawable data) =
+    Drawable { data | x = x }
 
 
 positionY : Float -> Drawable -> Drawable
-positionY y d =
-    d |> position (getPositionX d) y
-
-
-getPosition : Drawable -> ( Float, Float )
-getPosition =
-    getDrawingData >> .position
-
-
-getPositionX : Drawable -> Float
-getPositionX =
-    getPosition >> Tuple.first
-
-
-getPositionY : Drawable -> Float
-getPositionY =
-    getPosition >> Tuple.second
+positionY y (Drawable data) =
+    Drawable { data | y = y }
