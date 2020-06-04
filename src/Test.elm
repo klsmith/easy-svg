@@ -11,8 +11,11 @@ main =
     EasySvg.draw
         (PortView 640 640)
         (Camera 0 0 64 64)
-        [ testCircle |> position 27 27
+        [ testCircle |> position 26 26
+        , testCircle |> position 26 38
+        , testCircle |> position 38 26
         , testCircle |> position 38 38
+        , testRectangle |> position 32 32
         ]
 
 
@@ -23,9 +26,16 @@ testCircle =
         |> outline colorB 3
 
 
+testRectangle : Drawable
+testRectangle =
+    rectangle 16 16
+        |> fill colorB
+        |> outline colorA 2
+
+
 colorA =
-    Color.rgba 1 0 1 0.5
+    Color.rgba 0.5 0.5 0.5 0.25
 
 
 colorB =
-    Color.rgba 0 1 0 1
+    Color.rgba 0 0 0 0.5

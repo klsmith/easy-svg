@@ -7,6 +7,7 @@ module Drawable exposing
     , getDrawingData
     , outline
     , position
+    , rectangle
     )
 
 import Color exposing (Color)
@@ -18,7 +19,6 @@ type Drawable
 
 type alias DrawingData =
     { shape : Shape
-    , image : Maybe String
     , outline : Maybe ( Color, Float )
     , fill : Maybe Color
     , scale : ( Float, Float )
@@ -30,6 +30,7 @@ type alias DrawingData =
 
 type Shape
     = Circle Float
+    | Rectangle Float Float
 
 
 
@@ -42,7 +43,6 @@ drawable : Shape -> Drawable
 drawable shape =
     Drawable
         { shape = shape
-        , image = Nothing
         , outline = Nothing
         , fill = Nothing
         , scale = ( 1, 1 )
@@ -53,8 +53,13 @@ drawable shape =
 
 
 circle : Float -> Drawable
-circle radius =
-    drawable (Circle radius)
+circle =
+    drawable << Circle
+
+
+rectangle : Float -> Float -> Drawable
+rectangle width height =
+    drawable (Rectangle width height)
 
 
 
@@ -80,13 +85,6 @@ fill color (Drawable data) =
 
 {-| Doesn't Render
 -}
-image : String -> Drawable -> Drawable
-image imgSrc (Drawable data) =
-    Drawable { data | image = Just imgSrc }
-
-
-{-| Doesn't Render
--}
 rotate : Float -> Drawable -> Drawable
 rotate r (Drawable data) =
     Drawable { data | rotate = r }
@@ -99,8 +97,8 @@ rotate r (Drawable data) =
 {-| Doesn't Render
 -}
 scale : Float -> Drawable -> Drawable
-scale s d =
-    d |> scaleXY s s
+scale s =
+    scaleXY s s
 
 
 {-| Doesn't Render
@@ -125,18 +123,18 @@ scaleY y d =
 
 
 getScaleXY : Drawable -> ( Float, Float )
-getScaleXY (Drawable data) =
-    data.scale
+getScaleXY =
+    getDrawingData >> .scale
 
 
 getScaleX : Drawable -> Float
-getScaleX d =
-    Tuple.first (getScaleXY d)
+getScaleX =
+    getScaleXY >> Tuple.first
 
 
 getScaleY : Drawable -> Float
-getScaleY d =
-    Tuple.second (getScaleXY d)
+getScaleY =
+    getScaleXY >> Tuple.second
 
 
 
@@ -146,8 +144,8 @@ getScaleY d =
 {-| Doesn't Render
 -}
 skew : Float -> Drawable -> Drawable
-skew s d =
-    d |> skewXY s s
+skew s =
+    skewXY s s
 
 
 {-| Doesn't Render
@@ -172,18 +170,18 @@ skewY y d =
 
 
 getSkewXY : Drawable -> ( Float, Float )
-getSkewXY (Drawable data) =
-    data.skew
+getSkewXY =
+    getDrawingData >> .skew
 
 
 getSkewX : Drawable -> Float
-getSkewX d =
-    Tuple.first (getSkewXY d)
+getSkewX =
+    getSkewXY >> Tuple.first
 
 
 getSkewY : Drawable -> Float
-getSkewY d =
-    Tuple.second (getSkewXY d)
+getSkewY =
+    getSkewXY >> Tuple.second
 
 
 
@@ -206,15 +204,15 @@ positionY y d =
 
 
 getPosition : Drawable -> ( Float, Float )
-getPosition (Drawable data) =
-    data.position
+getPosition =
+    getDrawingData >> .position
 
 
 getPositionX : Drawable -> Float
-getPositionX d =
-    Tuple.first (getPosition d)
+getPositionX =
+    getPosition >> Tuple.first
 
 
 getPositionY : Drawable -> Float
-getPositionY d =
-    Tuple.second (getPosition d)
+getPositionY =
+    getPosition >> Tuple.second
