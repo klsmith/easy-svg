@@ -11,13 +11,19 @@ main =
     EasySvg.draw
         (PortView 640 640)
         (Camera 0 0 64 64)
-        [ testRectangle
-        , ellipse 5 10
-            |> fill (Color.rgba 0 1 0 1)
-            |> outline (Color.rgb 0 0 0) 1
-        , ellipse 3.5 5
-            |> fill colorA
-            |> outline colorB 1
+        [ testCircleGroup |> scale 0.5
+        , testRectangle
+        , ellipse 5 10 |> fill (Color.rgb 0 1 0)
+        ]
+
+
+testCircleGroup : Drawable
+testCircleGroup =
+    group
+        [ testCircle |> translate -6 -6
+        , testCircle |> translate -6 6
+        , testCircle |> translate 6 -6
+        , testCircle |> translate 6 6
         ]
 
 

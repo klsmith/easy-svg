@@ -4,10 +4,11 @@ module Drawable exposing
     , Shape(..)
     , Transform(..)
     , circle
+    , ellipse
     , fill
     , getDrawingData
+    , group
     , outline
-    , ellipse
     , rectangle
     , rotate
     , scale
@@ -38,6 +39,7 @@ type Shape
     = Circle Float
     | Rectangle Float Float
     | Ellipse Float Float
+    | Group (List Drawable)
 
 
 type Transform
@@ -75,6 +77,11 @@ rectangle width height =
 ellipse : Float -> Float -> Drawable
 ellipse width height =
     drawable (Ellipse width height)
+
+
+group : List Drawable -> Drawable
+group =
+    drawable << Group
 
 
 

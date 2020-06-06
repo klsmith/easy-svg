@@ -85,6 +85,10 @@ drawShape drawable =
                 ]
                 []
 
+        Group drawables ->
+            TS.g [ TSA.transform (getTransforms data) ]
+                (List.map drawShape drawables)
+
 
 getStrokeWidth : DrawingData -> Float
 getStrokeWidth data =
