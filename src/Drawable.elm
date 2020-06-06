@@ -9,6 +9,7 @@ module Drawable exposing
     , getDrawingData
     , group
     , outline
+    , pentagon
     , rectangle
     , rotate
     , scale
@@ -20,6 +21,7 @@ module Drawable exposing
     , translate
     , translateX
     , translateY
+    , triangle
     )
 
 import Color exposing (Color)
@@ -41,6 +43,7 @@ type Shape
     = Circle Float
     | Rectangle Float Float
     | Ellipse Float Float
+    | Ngon Int Float
     | Group (List Drawable)
 
 
@@ -81,6 +84,16 @@ rectangle width height =
 ellipse : Float -> Float -> Drawable
 ellipse width height =
     drawable (Ellipse width height)
+
+
+triangle : Float -> Drawable
+triangle =
+    drawable << Ngon 3
+
+
+pentagon : Float -> Drawable
+pentagon =
+    drawable << Ngon 5
 
 
 group : List Drawable -> Drawable

@@ -17,7 +17,17 @@ main =
             |> skewY 20
         , testRectangle
         , ellipse 5 10
-            |> fill (Color.rgba 0 1 0 0.6)
+            |> fill green
+        , triangle 6
+            |> fill red
+            |> outline green 1
+            |> translate 16 -16
+            |> rotate 45
+        , pentagon 6
+            |> fill red
+            |> outline green 1
+            |> translate -16 16
+            |> rotate 45
         ]
 
 
@@ -45,6 +55,14 @@ testRectangle =
         |> outline colorA 2
         |> rotate 45
         |> scaleX 2
+
+
+red =
+    Color.rgba 1 0 0 0.6
+
+
+green =
+    Color.rgba 0 1 0 0.6
 
 
 colorA =

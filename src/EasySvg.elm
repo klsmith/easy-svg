@@ -85,9 +85,38 @@ drawShape drawable =
                 ]
                 []
 
+        Ngon n radius ->
+            TS.polygon
+                [ TSA.points (toNgonPoints 0 n radius [])
+                , TSA.transform (getTransforms data)
+                , TSA.strokeWidth (TST.num (getStrokeWidth data))
+                , TSA.stroke (getStrokePaint data)
+                , TSA.fill (getFillPaint data)
+                ]
+                []
+
         Group drawables ->
             TS.g [ TSA.transform (getTransforms data) ]
                 (List.map drawShape drawables)
+
+
+toNgonPoints : Int -> Int -> Float -> List ( Float, Float ) -> List ( Float, Float )
+toNgonPoints i n radius list =
+    if i == n then
+        list
+
+    else
+        let
+            a =
+                turns (toFloat i / toFloat n - 0.25)
+
+            x =
+                radius * cos a
+
+            y =
+                radius * sin a
+        in
+        toNgonPoints (i + 1) n radius (( x, y ) :: list)
 
 
 getStrokeWidth : DrawingData -> Float
@@ -119,7 +148,21 @@ getRectTransforms data width height =
 
 getTransforms : DrawingData -> List TST.Transform
 getTransforms data =
-    List.map mapTransformTypes data.transforms
+    let
+        ( translations, otherTransforms ) =
+            List.partition
+                (\t ->
+                    case t of
+                        Translate _ _ ->
+                            True
+
+                        _ ->
+                            False
+                )
+                data.transforms
+    in
+    List.map mapTransformTypes translations
+        ++ List.map mapTransformTypes otherTransforms
 
 
 mapTransformTypes : Drawable.Transform -> TST.Transform
