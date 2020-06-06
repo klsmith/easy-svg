@@ -15,6 +15,8 @@ module Drawable exposing
     , scaleX
     , scaleXY
     , scaleY
+    , skewX
+    , skewY
     , translate
     , translateX
     , translateY
@@ -46,6 +48,8 @@ type Transform
     = Translate Float Float
     | Rotate Float
     | Scale Float Float
+    | SkewX Float
+    | SkewY Float
 
 
 
@@ -156,3 +160,17 @@ translateY y =
 translate : Float -> Float -> Drawable -> Drawable
 translate x y =
     applyTransform (Translate x y)
+
+
+
+-- SKEW PIPELINE
+
+
+skewX : Float -> Drawable -> Drawable
+skewX a =
+    applyTransform (SkewX a)
+
+
+skewY : Float -> Drawable -> Drawable
+skewY a =
+    applyTransform (SkewY a)
