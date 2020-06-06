@@ -75,6 +75,17 @@ drawShape drawable =
                 ]
                 []
 
+        Oval width height ->
+            TS.ellipse
+                [ TSA.width (TST.num width)
+                , TSA.height (TST.num height)
+                , TSA.transform (getRectTransforms data width height)
+                , TSA.strokeWidth (TST.num (getStrokeWidth data))
+                , TSA.stroke (getStrokePaint data)
+                , TSA.fill (getFillPaint data)
+                ]
+                []
+
 
 getStrokeWidth : DrawingData -> Float
 getStrokeWidth data =
