@@ -6,6 +6,7 @@ module Drawable exposing
     , circle
     , fill
     , getDrawingData
+    , group
     , outline
     , rectangle
     , rotate
@@ -36,6 +37,7 @@ type alias DrawingData =
 type Shape
     = Circle Float
     | Rectangle Float Float
+    | Group (List Drawable)
 
 
 type Transform
@@ -68,6 +70,11 @@ circle =
 rectangle : Float -> Float -> Drawable
 rectangle width height =
     drawable (Rectangle width height)
+
+
+group : List Drawable -> Drawable
+group =
+    drawable << Group
 
 
 

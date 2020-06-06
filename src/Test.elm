@@ -11,11 +11,18 @@ main =
     EasySvg.draw
         (PortView 640 640)
         (Camera 0 0 64 64)
+        [ testCircleGroup |> scale 0.5
+        , testRectangle
+        ]
+
+
+testCircleGroup : Drawable
+testCircleGroup =
+    group
         [ testCircle |> translate -6 -6
         , testCircle |> translate -6 6
         , testCircle |> translate 6 -6
         , testCircle |> translate 6 6
-        , testRectangle
         ]
 
 
