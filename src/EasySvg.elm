@@ -75,6 +75,16 @@ drawShape drawable =
                 ]
                 []
 
+        Ellipse radiusX radiusY ->
+            TS.ellipse
+                [ TSA.rx (TST.num radiusX)
+                , TSA.ry (TST.num radiusY)
+                , TSA.strokeWidth (TST.num (getStrokeWidth data))
+                , TSA.stroke (getStrokePaint data)
+                , TSA.fill (getFillPaint data)
+                ]
+                []
+
         Group drawables ->
             TS.g [ TSA.transform (getTransforms data) ]
                 (List.map drawShape drawables)

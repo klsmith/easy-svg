@@ -13,6 +13,7 @@ main =
         (Camera 0 0 64 64)
         [ testCircleGroup |> scale 0.5
         , testRectangle
+        , ellipse 5 10 |> fill (Color.rgb 0 1 0)
         ]
 
 

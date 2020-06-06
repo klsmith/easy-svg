@@ -4,6 +4,7 @@ module Drawable exposing
     , Shape(..)
     , Transform(..)
     , circle
+    , ellipse
     , fill
     , getDrawingData
     , group
@@ -37,6 +38,7 @@ type alias DrawingData =
 type Shape
     = Circle Float
     | Rectangle Float Float
+    | Ellipse Float Float
     | Group (List Drawable)
 
 
@@ -70,6 +72,11 @@ circle =
 rectangle : Float -> Float -> Drawable
 rectangle width height =
     drawable (Rectangle width height)
+
+
+ellipse : Float -> Float -> Drawable
+ellipse width height =
+    drawable (Ellipse width height)
 
 
 group : List Drawable -> Drawable
