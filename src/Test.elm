@@ -11,9 +11,13 @@ main =
     EasySvg.draw
         (PortView 640 640)
         (Camera 0 0 64 64)
-        [ testCircleGroup |> scale 0.5
+        [ testCircleGroup
+            |> scale 0.5
+            |> skewX 400
+            |> skewY 20
         , testRectangle
-        , ellipse 5 10 |> fill (Color.rgb 0 1 0)
+        , ellipse 5 10
+            |> fill (Color.rgba 0 1 0 0.6)
         ]
 
 

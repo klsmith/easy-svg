@@ -133,3 +133,9 @@ mapTransformTypes t =
 
         Scale x y ->
             TST.Scale x y
+
+        SkewX a ->
+            TST.SkewX a
+
+        SkewY a ->
+            TST.SkewY a
