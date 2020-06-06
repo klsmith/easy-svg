@@ -1,7 +1,7 @@
 module EasySvg exposing (Camera, PortView, draw)
 
 import Color exposing (Color)
-import Drawable exposing (Drawable, DrawingData, Shape(..))
+import Drawable exposing (Drawable, DrawingData, Shape(..), Transform(..))
 import Html exposing (Html)
 import Svg exposing (Attribute, Svg)
 import TypedSvg as TS
@@ -16,8 +16,8 @@ type alias PortView =
 
 
 type alias Camera =
-    { x : Float
-    , y : Float
+    { centerX : Float
+    , centerY : Float
     , width : Float
     , height : Float
     }
@@ -28,9 +28,23 @@ draw portView camera drawables =
     TS.svg
         [ TSA.width (TST.num portView.width)
         , TSA.height (TST.num portView.height)
-        , TSA.viewBox camera.x camera.y camera.width camera.height
+        , TSA.viewBox
+            (centerToLeftX camera.centerX camera.width)
+            (centerToTopY camera.centerY camera.height)
+            camera.width
+            camera.height
         ]
         (List.map drawShape drawables)
+
+
+centerToLeftX : Float -> Float -> Float
+centerToLeftX centerX width =
+    centerX - width / 2
+
+
+centerToTopY : Float -> Float -> Float
+centerToTopY centerY height =
+    centerY - height / 2
 
 
 drawShape : Drawable -> Svg msg
@@ -43,9 +57,8 @@ drawShape drawable =
         Circle radius ->
             TS.circle
                 [ TSA.r (TST.num radius)
-                , TSA.cx (TST.num data.x)
-                , TSA.cy (TST.num data.y)
-                , TSA.strokeWidth (TST.num <| getStrokeWidth data)
+                , TSA.transform (getTransforms data)
+                , TSA.strokeWidth (TST.num (getStrokeWidth data))
                 , TSA.stroke (getStrokePaint data)
                 , TSA.fill (getFillPaint data)
                 ]
@@ -55,23 +68,12 @@ drawShape drawable =
             TS.rect
                 [ TSA.width (TST.num width)
                 , TSA.height (TST.num height)
-                , TSA.x (TST.num <| getTopLeftX data width)
-                , TSA.y (TST.num <| getTopLeftY data height)
-                , TSA.strokeWidth (TST.num <| getStrokeWidth data)
+                , TSA.transform (getRectTransforms data width height)
+                , TSA.strokeWidth (TST.num (getStrokeWidth data))
                 , TSA.stroke (getStrokePaint data)
                 , TSA.fill (getFillPaint data)
                 ]
                 []
-
-
-getTopLeftX : DrawingData -> Float -> Float
-getTopLeftX data width =
-    data.x - width / 2
-
-
-getTopLeftY : DrawingData -> Float -> Float
-getTopLeftY data height =
-    data.y - height / 2
 
 
 getStrokeWidth : DrawingData -> Float
@@ -94,3 +96,26 @@ getFillPaint data =
     data.fill
         |> Maybe.map TST.Paint
         |> Maybe.withDefault TST.PaintNone
+
+
+getRectTransforms : DrawingData -> Float -> Float -> List TST.Transform
+getRectTransforms data width height =
+    getTransforms data ++ [ TST.Translate (-width / 2) (-height / 2) ]
+
+
+getTransforms : DrawingData -> List TST.Transform
+getTransforms data =
+    List.map mapTransformTypes data.transforms
+
+
+mapTransformTypes : Drawable.Transform -> TST.Transform
+mapTransformTypes t =
+    case t of
+        Translate x y ->
+            TST.Translate x y
+
+        Rotate a ->
+            TST.Rotate a 0 0
+
+        Scale x y ->
+            TST.Scale x y

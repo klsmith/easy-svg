@@ -2,12 +2,20 @@ module Drawable exposing
     ( Drawable
     , DrawingData
     , Shape(..)
+    , Transform(..)
     , circle
     , fill
     , getDrawingData
     , outline
-    , position
     , rectangle
+    , rotate
+    , scale
+    , scaleX
+    , scaleXY
+    , scaleY
+    , translate
+    , translateX
+    , translateY
     )
 
 import Color exposing (Color)
@@ -21,17 +29,19 @@ type alias DrawingData =
     { shape : Shape
     , outline : Maybe ( Color, Float )
     , fill : Maybe Color
-    , scale : ( Float, Float )
-    , skew : ( Float, Float )
-    , rotate : Float
-    , x : Float
-    , y : Float
+    , transforms : List Transform
     }
 
 
 type Shape
     = Circle Float
     | Rectangle Float Float
+
+
+type Transform
+    = Translate Float Float
+    | Rotate Float
+    | Scale Float Float
 
 
 
@@ -46,11 +56,7 @@ drawable shape =
         { shape = shape
         , outline = Nothing
         , fill = Nothing
-        , scale = ( 1, 1 )
-        , skew = ( 0, 0 )
-        , rotate = 0
-        , x = 0
-        , y = 0
+        , transforms = []
         }
 
 
@@ -75,6 +81,11 @@ getDrawingData (Drawable data) =
     data
 
 
+applyTransform : Transform -> Drawable -> Drawable
+applyTransform newTransform (Drawable data) =
+    Drawable { data | transforms = newTransform :: data.transforms }
+
+
 outline : Color -> Float -> Drawable -> Drawable
 outline color width (Drawable data) =
     Drawable { data | outline = Just ( color, width ) }
@@ -85,121 +96,49 @@ fill color (Drawable data) =
     Drawable { data | fill = Just color }
 
 
-{-| Doesn't Render
--}
 rotate : Float -> Drawable -> Drawable
-rotate r (Drawable data) =
-    Drawable { data | rotate = r }
+rotate newAngle =
+    applyTransform (Rotate newAngle)
 
 
 
 -- SCALE PIPELINE
 
 
-{-| Doesn't Render
--}
 scale : Float -> Drawable -> Drawable
 scale s =
     scaleXY s s
 
 
-{-| Doesn't Render
--}
-scaleXY : Float -> Float -> Drawable -> Drawable
-scaleXY x y (Drawable data) =
-    Drawable { data | scale = ( x, y ) }
-
-
-{-| Doesn't Render
--}
 scaleX : Float -> Drawable -> Drawable
-scaleX x d =
-    d |> scaleXY x (getScaleY d)
+scaleX x =
+    scaleXY x 1
 
 
-{-| Doesn't Render
--}
 scaleY : Float -> Drawable -> Drawable
-scaleY y d =
-    d |> scaleXY (getScaleX d) y
+scaleY y =
+    scaleXY 1 y
 
 
-getScaleXY : Drawable -> ( Float, Float )
-getScaleXY =
-    getDrawingData >> .scale
-
-
-getScaleX : Drawable -> Float
-getScaleX =
-    getScaleXY >> Tuple.first
-
-
-getScaleY : Drawable -> Float
-getScaleY =
-    getScaleXY >> Tuple.second
-
-
-
--- SKEW PIPELINE
-
-
-{-| Doesn't Render
--}
-skew : Float -> Drawable -> Drawable
-skew s =
-    skewXY s s
-
-
-{-| Doesn't Render
--}
-skewXY : Float -> Float -> Drawable -> Drawable
-skewXY x y (Drawable data) =
-    Drawable { data | skew = ( x, y ) }
-
-
-{-| Doesn't Render
--}
-skewX : Float -> Drawable -> Drawable
-skewX x d =
-    d |> skewXY x (getSkewY d)
-
-
-{-| Doesn't Render
--}
-skewY : Float -> Drawable -> Drawable
-skewY y d =
-    d |> skewXY (getSkewX d) y
-
-
-getSkewXY : Drawable -> ( Float, Float )
-getSkewXY =
-    getDrawingData >> .skew
-
-
-getSkewX : Drawable -> Float
-getSkewX =
-    getSkewXY >> Tuple.first
-
-
-getSkewY : Drawable -> Float
-getSkewY =
-    getSkewXY >> Tuple.second
+scaleXY : Float -> Float -> Drawable -> Drawable
+scaleXY x y =
+    applyTransform (Scale x y)
 
 
 
 -- POSITION PIPELINE
 
 
-position : Float -> Float -> Drawable -> Drawable
-position x y d =
-    d |> positionX x |> positionY y
+translateX : Float -> Drawable -> Drawable
+translateX x =
+    translate x 0
 
 
-positionX : Float -> Drawable -> Drawable
-positionX x (Drawable data) =
-    Drawable { data | x = x }
+translateY : Float -> Drawable -> Drawable
+translateY y =
+    translate 0 y
 
 
-positionY : Float -> Drawable -> Drawable
-positionY y (Drawable data) =
-    Drawable { data | y = y }
+translate : Float -> Float -> Drawable -> Drawable
+translate x y =
+    applyTransform (Translate x y)

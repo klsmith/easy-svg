@@ -11,11 +11,11 @@ main =
     EasySvg.draw
         (PortView 640 640)
         (Camera 0 0 64 64)
-        [ testCircle |> position 26 26
-        , testCircle |> position 26 38
-        , testCircle |> position 38 26
-        , testCircle |> position 38 38
-        , testRectangle |> position 32 32
+        [ testCircle |> translate -6 -6
+        , testCircle |> translate -6 6
+        , testCircle |> translate 6 -6
+        , testCircle |> translate 6 6
+        , testRectangle
         ]
 
 
@@ -31,6 +31,8 @@ testRectangle =
     rectangle 16 16
         |> fill colorB
         |> outline colorA 2
+        |> rotate 45
+        |> scaleX 2
 
 
 colorA =
