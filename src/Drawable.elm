@@ -7,7 +7,7 @@ module Drawable exposing
     , fill
     , getDrawingData
     , outline
-    , oval
+    , ellipse
     , rectangle
     , rotate
     , scale
@@ -37,7 +37,7 @@ type alias DrawingData =
 type Shape
     = Circle Float
     | Rectangle Float Float
-    | Oval Float Float
+    | Ellipse Float Float
 
 
 type Transform
@@ -72,9 +72,9 @@ rectangle width height =
     drawable (Rectangle width height)
 
 
-oval : Float -> Float -> Drawable
-oval width height =
-    drawable (Oval width height)
+ellipse : Float -> Float -> Drawable
+ellipse width height =
+    drawable (Ellipse width height)
 
 
 

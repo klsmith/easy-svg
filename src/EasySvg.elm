@@ -75,11 +75,10 @@ drawShape drawable =
                 ]
                 []
 
-        Oval width height ->
+        Ellipse radiusX radiusY ->
             TS.ellipse
-                [ TSA.width (TST.num width)
-                , TSA.height (TST.num height)
-                , TSA.transform (getRectTransforms data width height)
+                [ TSA.rx (TST.num radiusX)
+                , TSA.ry (TST.num radiusY)
                 , TSA.strokeWidth (TST.num (getStrokeWidth data))
                 , TSA.stroke (getStrokePaint data)
                 , TSA.fill (getFillPaint data)
