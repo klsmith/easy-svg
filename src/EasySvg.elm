@@ -127,12 +127,21 @@ drawShape drawable =
                 , TSA.strokeWidth (TST.num (getStrokeWidth data))
                 , TSA.stroke (getStrokePaint data)
                 , TSA.fill (getFillPaint data)
+                , TSA.style disableTextSelect
                 ]
                 [ Svg.text string ]
 
         Group drawables ->
             TS.g [ TSA.transform (getTransforms data) ]
                 (List.map drawShape drawables)
+
+
+disableTextSelect : String
+disableTextSelect =
+    """-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+user-select: none;"""
 
 
 toFontFamilyList : FontFamily -> List String
