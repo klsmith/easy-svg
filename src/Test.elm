@@ -69,8 +69,10 @@ scene =
         |> rotate 45
     , stopSign
         |> translate -16 16
-
-    -- |> rotate 45
+        |> rotate -45
+    , alsoStopSign
+        |> translate 16 16
+        |> rotate 45
     , arrow
         |> fill black
         |> rotate 45
@@ -103,6 +105,11 @@ stopSign =
         , text impactFont 4.5 "STOP"
             |> fill white
         ]
+
+
+alsoStopSign : Drawable
+alsoStopSign =
+    image 16 16 "https://lh3.googleusercontent.com/proxy/M5_6UggNSMQ9zIdPgfGcjjBStCWCnSlrL-jkFiz3YGO5zjP07q-oR8361SLjx7XnLuljVyBSahqLgnQuvw"
 
 
 impactFont : FontFamily

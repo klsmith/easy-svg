@@ -10,6 +10,7 @@ module Drawable exposing
     , getDrawingData
     , group
     , hexagon
+    , image
     , octagon
     , outline
     , pentagon
@@ -50,6 +51,7 @@ type Shape
     | Ellipse Float Float
     | Polygon (List Point)
     | Ngon Int Float
+    | Image String Float Float
     | Text String FontFamily Float
     | Group (List Drawable)
 
@@ -126,6 +128,11 @@ hexagon =
 octagon : Float -> Drawable
 octagon =
     drawable << Ngon 8
+
+
+image : Float -> Float -> String -> Drawable
+image width height src =
+    drawable (Image src width height)
 
 
 text : FontFamily -> Float -> String -> Drawable

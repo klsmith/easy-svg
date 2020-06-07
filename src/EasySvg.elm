@@ -105,6 +105,18 @@ drawShape drawable =
                 ]
                 []
 
+        Image src width height ->
+            TS.image
+                [ TSA.xlinkHref src
+                , TSA.width (TST.num width)
+                , TSA.height (TST.num height)
+                , TSA.transform (getRectTransforms data width height)
+                , TSA.fill (getFillPaint data)
+                , TSA.stroke (getStrokePaint data)
+                , TSA.strokeWidth (TST.num (getStrokeWidth data))
+                ]
+                []
+
         Text string fontFamily size ->
             TS.text_
                 [ TSA.textAnchor TST.AnchorMiddle
