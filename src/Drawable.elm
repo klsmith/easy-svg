@@ -103,10 +103,7 @@ hexagon =
 
 octogon : Float -> Drawable
 octogon =
-    drawable
-        << Ngon 8
-            drawable
-        << Ngon 10
+    drawable << Ngon 8
 
 
 group : List Drawable -> Drawable
