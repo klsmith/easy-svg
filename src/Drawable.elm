@@ -96,6 +96,19 @@ pentagon =
     drawable << Ngon 5
 
 
+hexagon : Float -> Drawable
+hexagon =
+    drawable << Ngon 6
+
+
+octogon : Float -> Drawable
+octogon =
+    drawable
+        << Ngon 8
+            drawable
+        << Ngon 10
+
+
 group : List Drawable -> Drawable
 group =
     drawable << Group

@@ -1,9 +1,8 @@
 module EasySvg exposing (Camera, PortView, draw)
 
-import Color exposing (Color)
 import Drawable exposing (Drawable, DrawingData, Shape(..), Transform(..))
 import Html exposing (Html)
-import Svg exposing (Attribute, Svg)
+import Svg exposing (Svg)
 import TypedSvg as TS
 import TypedSvg.Attributes as TSA
 import TypedSvg.Types as TST
@@ -79,6 +78,7 @@ drawShape drawable =
             TS.ellipse
                 [ TSA.rx (TST.num radiusX)
                 , TSA.ry (TST.num radiusY)
+                , TSA.transform (getTransforms data)
                 , TSA.strokeWidth (TST.num (getStrokeWidth data))
                 , TSA.stroke (getStrokePaint data)
                 , TSA.fill (getFillPaint data)
