@@ -67,12 +67,14 @@ scene =
         |> outline green 1
         |> translate 16 -16
         |> rotate 45
-    , pentagon 6
-        |> fill red
-        |> outline green 1
+    , stopSign
         |> translate -16 16
+
+    -- |> rotate 45
+    , arrow
+        |> fill black
         |> rotate 45
-    , arrow |> fill black |> rotate 45 |> translate -32 -12
+        |> translate -32 -12
     ]
 
 
@@ -84,6 +86,28 @@ arrow =
         , ( 0, 0 )
         , ( -6, -6 )
         ]
+
+
+stopSign : Drawable
+stopSign =
+    let
+        baseOct =
+            octagon 6 |> rotate 22
+    in
+    group
+        [ baseOct
+            |> fill red
+        , baseOct
+            |> scale 0.9
+            |> outline white 0.25
+        , text impactFont 4.5 "STOP"
+            |> fill white
+        ]
+
+
+impactFont : FontFamily
+impactFont =
+    Multiple [ "Impact", "Charcoal", "sans-serif" ]
 
 
 testCircleGroup : Drawable
@@ -133,7 +157,7 @@ white =
 
 red : Color
 red =
-    Color.rgba 1 0 0 0.6
+    Color.rgba 1 0 0 1
 
 
 green : Color

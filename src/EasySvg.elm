@@ -1,6 +1,6 @@
 module EasySvg exposing (Camera, PortView, draw)
 
-import Drawable exposing (Drawable, DrawingData, Shape(..), Transform(..))
+import Drawable exposing (Drawable, DrawingData, FontFamily(..), Shape(..), Transform(..))
 import Html exposing (Html)
 import Svg exposing (Svg)
 import TypedSvg as TS
@@ -105,9 +105,35 @@ drawShape drawable =
                 ]
                 []
 
+        Text string fontFamily size ->
+            TS.text_
+                [ TSA.textAnchor TST.AnchorMiddle
+                , TSA.dominantBaseline TST.DominantBaselineCentral
+                , TSA.fontFamily (toFontFamilyList fontFamily)
+                , TSA.fontSize (TST.num size)
+                , TSA.transform (getTransforms data)
+                , TSA.strokeWidth (TST.num (getStrokeWidth data))
+                , TSA.stroke (getStrokePaint data)
+                , TSA.fill (getFillPaint data)
+                ]
+                [ Svg.text string ]
+
         Group drawables ->
             TS.g [ TSA.transform (getTransforms data) ]
                 (List.map drawShape drawables)
+
+
+toFontFamilyList : FontFamily -> List String
+toFontFamilyList fontFamily =
+    case fontFamily of
+        Inherit ->
+            []
+
+        Single f ->
+            [ f ]
+
+        Multiple list ->
+            list
 
 
 toNgonPoints : Int -> Int -> Float -> List ( Float, Float ) -> List ( Float, Float )

@@ -1,6 +1,7 @@
 module Drawable exposing
     ( Drawable
     , DrawingData
+    , FontFamily(..)
     , Shape(..)
     , Transform(..)
     , circle
@@ -8,6 +9,8 @@ module Drawable exposing
     , fill
     , getDrawingData
     , group
+    , hexagon
+    , octagon
     , outline
     , pentagon
     , polygon
@@ -19,6 +22,7 @@ module Drawable exposing
     , scaleY
     , skewX
     , skewY
+    , text
     , translate
     , translateX
     , translateY
@@ -44,13 +48,20 @@ type Shape
     = Circle Float
     | Rectangle Float Float
     | Ellipse Float Float
-    | Ngon Int Float
     | Polygon (List Point)
+    | Ngon Int Float
+    | Text String FontFamily Float
     | Group (List Drawable)
 
 
 type alias Point =
     ( Float, Float )
+
+
+type FontFamily
+    = Inherit
+    | Single String
+    | Multiple (List String)
 
 
 type Transform
@@ -112,9 +123,14 @@ hexagon =
     drawable << Ngon 6
 
 
-octogon : Float -> Drawable
-octogon =
+octagon : Float -> Drawable
+octagon =
     drawable << Ngon 8
+
+
+text : FontFamily -> Float -> String -> Drawable
+text fontFamily size string =
+    drawable (Text string fontFamily size)
 
 
 group : List Drawable -> Drawable
