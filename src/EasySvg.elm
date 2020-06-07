@@ -85,6 +85,16 @@ drawShape drawable =
                 ]
                 []
 
+        Polygon points ->
+            TS.polygon
+                [ TSA.points points
+                , TSA.transform (getTransforms data)
+                , TSA.strokeWidth (TST.num (getStrokeWidth data))
+                , TSA.stroke (getStrokePaint data)
+                , TSA.fill (getFillPaint data)
+                ]
+                []
+
         Ngon n radius ->
             TS.polygon
                 [ TSA.points (toNgonPoints 0 n radius [])
@@ -172,7 +182,7 @@ mapTransformTypes t =
             TST.Translate x y
 
         Rotate a ->
-            TST.Rotate a 0 0
+            TST.Rotate -a 0 0
 
         Scale x y ->
             TST.Scale x y

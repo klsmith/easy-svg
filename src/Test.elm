@@ -72,7 +72,18 @@ scene =
         |> outline green 1
         |> translate -16 16
         |> rotate 45
+    , arrow |> fill black |> rotate 45 |> translate -32 -12
     ]
+
+
+arrow : Drawable
+arrow =
+    polygon
+        [ ( 12, 0 )
+        , ( -6, 6 )
+        , ( 0, 0 )
+        , ( -6, -6 )
+        ]
 
 
 testCircleGroup : Drawable

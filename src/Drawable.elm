@@ -10,6 +10,7 @@ module Drawable exposing
     , group
     , outline
     , pentagon
+    , polygon
     , rectangle
     , rotate
     , scale
@@ -44,7 +45,12 @@ type Shape
     | Rectangle Float Float
     | Ellipse Float Float
     | Ngon Int Float
+    | Polygon (List Point)
     | Group (List Drawable)
+
+
+type alias Point =
+    ( Float, Float )
 
 
 type Transform
@@ -84,6 +90,11 @@ rectangle width height =
 ellipse : Float -> Float -> Drawable
 ellipse width height =
     drawable (Ellipse width height)
+
+
+polygon : List Point -> Drawable
+polygon =
+    drawable << Polygon
 
 
 triangle : Float -> Drawable
