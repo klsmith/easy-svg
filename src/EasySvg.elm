@@ -55,85 +55,81 @@ drawShape drawable =
     case data.shape of
         Circle radius ->
             TS.circle
-                [ TSA.r (TST.num radius)
-                , TSA.transform (getTransforms data)
-                , TSA.strokeWidth (TST.num (getStrokeWidth data))
-                , TSA.stroke (getStrokePaint data)
-                , TSA.fill (getFillPaint data)
-                ]
+                (TSA.r (TST.num radius)
+                    :: TSA.transform (getTransforms data)
+                    :: commonAttributes data
+                )
                 []
 
         Rectangle width height ->
             TS.rect
-                [ TSA.width (TST.num width)
-                , TSA.height (TST.num height)
-                , TSA.transform (getRectTransforms data width height)
-                , TSA.strokeWidth (TST.num (getStrokeWidth data))
-                , TSA.stroke (getStrokePaint data)
-                , TSA.fill (getFillPaint data)
-                ]
+                (TSA.width (TST.num width)
+                    :: TSA.height (TST.num height)
+                    :: TSA.transform (getRectTransforms data width height)
+                    :: commonAttributes data
+                )
                 []
 
         Ellipse radiusX radiusY ->
             TS.ellipse
-                [ TSA.rx (TST.num radiusX)
-                , TSA.ry (TST.num radiusY)
-                , TSA.transform (getTransforms data)
-                , TSA.strokeWidth (TST.num (getStrokeWidth data))
-                , TSA.stroke (getStrokePaint data)
-                , TSA.fill (getFillPaint data)
-                ]
+                (TSA.rx (TST.num radiusX)
+                    :: TSA.ry (TST.num radiusY)
+                    :: TSA.transform (getTransforms data)
+                    :: commonAttributes data
+                )
                 []
 
         Polygon points ->
             TS.polygon
-                [ TSA.points points
-                , TSA.transform (getTransforms data)
-                , TSA.strokeWidth (TST.num (getStrokeWidth data))
-                , TSA.stroke (getStrokePaint data)
-                , TSA.fill (getFillPaint data)
-                ]
+                (TSA.points points
+                    :: TSA.transform (getTransforms data)
+                    :: commonAttributes data
+                )
                 []
 
         Ngon n radius ->
             TS.polygon
-                [ TSA.points (toNgonPoints 0 n radius [])
-                , TSA.transform (getTransforms data)
-                , TSA.strokeWidth (TST.num (getStrokeWidth data))
-                , TSA.stroke (getStrokePaint data)
-                , TSA.fill (getFillPaint data)
-                ]
-                []
-
-        Image src width height ->
-            TS.image
-                [ TSA.xlinkHref src
-                , TSA.width (TST.num width)
-                , TSA.height (TST.num height)
-                , TSA.transform (getRectTransforms data width height)
-                , TSA.fill (getFillPaint data)
-                , TSA.stroke (getStrokePaint data)
-                , TSA.strokeWidth (TST.num (getStrokeWidth data))
-                ]
+                (TSA.points (toNgonPoints 0 n radius [])
+                    :: TSA.transform (getTransforms data)
+                    :: commonAttributes data
+                )
                 []
 
         Text string fontFamily size ->
             TS.text_
-                [ TSA.textAnchor TST.AnchorMiddle
-                , TSA.dominantBaseline TST.DominantBaselineCentral
-                , TSA.fontFamily (toFontFamilyList fontFamily)
-                , TSA.fontSize (TST.num size)
-                , TSA.transform (getTransforms data)
-                , TSA.strokeWidth (TST.num (getStrokeWidth data))
-                , TSA.stroke (getStrokePaint data)
-                , TSA.fill (getFillPaint data)
-                , TSA.style disableTextSelect
-                ]
+                (TSA.textAnchor TST.AnchorMiddle
+                    :: TSA.dominantBaseline TST.DominantBaselineCentral
+                    :: TSA.fontFamily (toFontFamilyList fontFamily)
+                    :: TSA.fontSize (TST.num size)
+                    :: TSA.transform (getTransforms data)
+                    :: TSA.style disableTextSelect
+                    :: commonAttributes data
+                )
                 [ Svg.text string ]
+
+        Image src width height ->
+            TS.image
+                (TSA.xlinkHref src
+                    :: TSA.width (TST.num width)
+                    :: TSA.height (TST.num height)
+                    :: TSA.transform (getRectTransforms data width height)
+                    :: []
+                )
+                []
 
         Group drawables ->
             TS.g [ TSA.transform (getTransforms data) ]
                 (List.map drawShape drawables)
+
+
+{-| Stuff that every shape shares, except group and image
+-}
+commonAttributes : DrawingData -> List (Svg.Attribute msg)
+commonAttributes data =
+    [ TSA.strokeWidth (TST.num (getStrokeWidth data))
+    , TSA.stroke (getStrokePaint data)
+    , TSA.fill (getFillPaint data)
+    ]
 
 
 disableTextSelect : String
@@ -150,10 +146,7 @@ toFontFamilyList fontFamily =
         Inherit ->
             []
 
-        Single f ->
-            [ f ]
-
-        Multiple list ->
+        Family list ->
             list
 
 

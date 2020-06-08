@@ -114,7 +114,7 @@ alsoStopSign =
 
 impactFont : FontFamily
 impactFont =
-    Multiple [ "Impact", "Charcoal", "sans-serif" ]
+    Family [ "Impact", "Charcoal", "sans-serif" ]
 
 
 testCircleGroup : Drawable

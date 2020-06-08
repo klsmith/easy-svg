@@ -62,8 +62,7 @@ type alias Point =
 
 type FontFamily
     = Inherit
-    | Single String
-    | Multiple (List String)
+    | Family (List String)
 
 
 type Transform
