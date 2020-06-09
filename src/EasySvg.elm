@@ -1,11 +1,49 @@
-module EasySvg exposing (Camera, PortView, draw)
+module EasySvg exposing
+    ( Camera
+    , Drawable
+    , DrawingData
+    , FontFamily(..)
+    , PortView
+    , Shape(..)
+    , Transform(..)
+    , circle
+    , ellipse
+    , fill
+    , getDrawingData
+    , group
+    , hexagon
+    , image
+    , octagon
+    , outline
+    , pentagon
+    , polygon
+    , rectangle
+    , render
+    , rotate
+    , scale
+    , scaleX
+    , scaleXY
+    , scaleY
+    , skewX
+    , skewY
+    , text
+    , toSvg
+    , translate
+    , translateX
+    , translateY
+    , triangle
+    )
 
-import Drawable exposing (Drawable, DrawingData, FontFamily(..), Shape(..), Transform(..))
+import Color exposing (Color)
 import Html exposing (Html)
 import Svg exposing (Svg)
 import TypedSvg as TS
 import TypedSvg.Attributes as TSA
 import TypedSvg.Types as TST
+
+
+
+-- TYPES
 
 
 type alias PortView =
@@ -22,8 +60,211 @@ type alias Camera =
     }
 
 
-draw : PortView -> Camera -> List Drawable -> Html msg
-draw portView camera drawables =
+type Drawable
+    = Drawable DrawingData
+
+
+type alias DrawingData =
+    { shape : Shape
+    , outline : Maybe ( Color, Float )
+    , fill : Maybe Color
+    , transforms : List Transform
+    }
+
+
+type Shape
+    = Circle Float
+    | Rectangle Float Float
+    | Ellipse Float Float
+    | Polygon (List Point)
+    | Ngon Int Float
+    | Image String Float Float
+    | Text String FontFamily Float
+    | Group (List Drawable)
+
+
+type alias Point =
+    ( Float, Float )
+
+
+type FontFamily
+    = Inherit
+    | Family (List String)
+
+
+type Transform
+    = Translate Float Float
+    | Rotate Float
+    | Scale Float Float
+    | SkewX Float
+    | SkewY Float
+
+
+
+-- CONSTRUCTORS
+
+
+{-| Not public, this is used to hold the default data for everything except shape.
+-}
+drawable : Shape -> Drawable
+drawable shape =
+    Drawable
+        { shape = shape
+        , outline = Nothing
+        , fill = Nothing
+        , transforms = []
+        }
+
+
+circle : Float -> Drawable
+circle =
+    drawable << Circle
+
+
+rectangle : Float -> Float -> Drawable
+rectangle width height =
+    drawable (Rectangle width height)
+
+
+ellipse : Float -> Float -> Drawable
+ellipse width height =
+    drawable (Ellipse width height)
+
+
+polygon : List Point -> Drawable
+polygon =
+    drawable << Polygon
+
+
+triangle : Float -> Drawable
+triangle =
+    drawable << Ngon 3
+
+
+pentagon : Float -> Drawable
+pentagon =
+    drawable << Ngon 5
+
+
+hexagon : Float -> Drawable
+hexagon =
+    drawable << Ngon 6
+
+
+octagon : Float -> Drawable
+octagon =
+    drawable << Ngon 8
+
+
+image : Float -> Float -> String -> Drawable
+image width height src =
+    drawable (Image src width height)
+
+
+text : FontFamily -> Float -> String -> Drawable
+text fontFamily size string =
+    drawable (Text string fontFamily size)
+
+
+group : List Drawable -> Drawable
+group =
+    drawable << Group
+
+
+
+-- GENERIC PIPELINE
+
+
+{-| Exposed to allow for custom rendering modules.
+-}
+getDrawingData : Drawable -> DrawingData
+getDrawingData (Drawable data) =
+    data
+
+
+applyTransform : Transform -> Drawable -> Drawable
+applyTransform newTransform (Drawable data) =
+    Drawable { data | transforms = newTransform :: data.transforms }
+
+
+outline : Color -> Float -> Drawable -> Drawable
+outline color width (Drawable data) =
+    Drawable { data | outline = Just ( color, width ) }
+
+
+fill : Color -> Drawable -> Drawable
+fill color (Drawable data) =
+    Drawable { data | fill = Just color }
+
+
+rotate : Float -> Drawable -> Drawable
+rotate newAngle =
+    applyTransform (Rotate newAngle)
+
+
+
+-- SCALE PIPELINE
+
+
+scale : Float -> Drawable -> Drawable
+scale s =
+    scaleXY s s
+
+
+scaleX : Float -> Drawable -> Drawable
+scaleX x =
+    scaleXY x 1
+
+
+scaleY : Float -> Drawable -> Drawable
+scaleY y =
+    scaleXY 1 y
+
+
+scaleXY : Float -> Float -> Drawable -> Drawable
+scaleXY x y =
+    applyTransform (Scale x y)
+
+
+
+-- TRANSLATE PIPELINE
+
+
+translateX : Float -> Drawable -> Drawable
+translateX x =
+    translate x 0
+
+
+translateY : Float -> Drawable -> Drawable
+translateY y =
+    translate 0 y
+
+
+translate : Float -> Float -> Drawable -> Drawable
+translate x y =
+    applyTransform (Translate x y)
+
+
+
+-- SKEW PIPELINE
+
+
+skewX : Float -> Drawable -> Drawable
+skewX a =
+    applyTransform (SkewX a)
+
+
+skewY : Float -> Drawable -> Drawable
+skewY a =
+    applyTransform (SkewY a)
+
+
+
+-- RENDERING
+
+
+render : PortView -> Camera -> List Drawable -> Html msg
+render portView camera drawables =
     TS.svg
         [ TSA.width (TST.num portView.width)
         , TSA.height (TST.num portView.height)
@@ -33,7 +274,7 @@ draw portView camera drawables =
             camera.width
             camera.height
         ]
-        (List.map drawShape drawables)
+        (List.map toSvg drawables)
 
 
 centerToLeftX : Float -> Float -> Float
@@ -46,12 +287,8 @@ centerToTopY centerY height =
     centerY - height / 2
 
 
-drawShape : Drawable -> Svg msg
-drawShape drawable =
-    let
-        data =
-            Drawable.getDrawingData drawable
-    in
+toSvg : Drawable -> Svg msg
+toSvg (Drawable data) =
     case data.shape of
         Circle radius ->
             TS.circle
@@ -109,17 +346,16 @@ drawShape drawable =
 
         Image src width height ->
             TS.image
-                (TSA.xlinkHref src
-                    :: TSA.width (TST.num width)
-                    :: TSA.height (TST.num height)
-                    :: TSA.transform (getRectTransforms data width height)
-                    :: []
-                )
+                [ TSA.xlinkHref src
+                , TSA.width (TST.num width)
+                , TSA.height (TST.num height)
+                , TSA.transform (getRectTransforms data width height)
+                ]
                 []
 
         Group drawables ->
             TS.g [ TSA.transform (getTransforms data) ]
-                (List.map drawShape drawables)
+                (List.map toSvg drawables)
 
 
 {-| Stuff that every shape shares, except group and image
@@ -215,7 +451,7 @@ getTransforms data =
         ++ List.map mapTransformTypes otherTransforms
 
 
-mapTransformTypes : Drawable.Transform -> TST.Transform
+mapTransformTypes : Transform -> TST.Transform
 mapTransformTypes t =
     case t of
         Translate x y ->

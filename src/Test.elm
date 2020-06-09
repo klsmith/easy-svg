@@ -1,8 +1,7 @@
 module Test exposing (main)
 
 import Color exposing (Color, green, red)
-import Drawable exposing (..)
-import EasySvg exposing (Camera, PortView)
+import EasySvg exposing (..)
 import Element as E
 import Element.Background as EBackground
 import Element.Border as EBorder
@@ -21,7 +20,7 @@ main =
             , EBorder.width 1
             ]
             (E.html
-                (EasySvg.draw
+                (EasySvg.render
                     portView
                     camera
                     scene
